@@ -1,11 +1,29 @@
 import os
 import datetime
 import sys
+import random
 import pandas as pd
 import paramiko
 
 # === 1. CONFIGURATION ===
-MASTER_FILE = "attendance.csv"
+# Paste your list of active student/school records here
+# Format: (Student_id, School_id)
+STUDENT_DATA_RECORDS = [
+    ("574095232", "13K123"),
+    ("958709227", "13K123"),
+    ("243615677", "13K123"),
+    ("381370052", "13K123"),
+    ("992399521", "13K123"),
+    ("159541752", "13K123"),
+    ("142858690", "27Q321"),
+    ("526702789", "27Q321"),
+    ("406243122", "27Q321"),
+    ("281062504", "27Q321"),
+    ("189563051", "27Q321"),
+    ("260768059", "27Q321"),
+    ("153274070", "02M800")
+    # 💡 Pro-tip: You can paste additional rows following this exact format above!
+]
 
 # Fetch secure environmental credentials from GitHub Secrets
 SFTP_HOST = os.environ.get("SFTP_HOST")
@@ -19,37 +37,48 @@ if not all([SFTP_HOST, SFTP_USER, SFTP_PASS]):
     print("CRITICAL ERROR: One or more secure SFTP Secrets are missing from repository settings!")
     sys.exit(1)
 
-# === 2. DYNAMIC DATA PROCESSING ===
+# === 2. DYNAMIC ATTENDANCE GENERATION ===
 today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+print(f"Generating live data rows for date: {today_str}")
 
-print(f"Parsing data sheet template: {MASTER_FILE}")
-df = pd.read_csv(MASTER_FILE)
+# Setup status options and weighting (e.g., 80% Present, 10% Tardy, 10% Absent)
+status_options = ["Present", "Tardy", "Absent"]
+status_weights = [0.80, 0.10, 0.10]
 
-# Dynamically stamp today's execution date onto your tracking columns
-for col in df.columns:
-    if col.lower() in ['date', 'attendance_date', 'timestamp']:
-        df[col] = today_str
-        print(f"✅ Auto-updated date field values in column: {col}")
+# List to hold processed row structures
+compiled_rows = []
 
-# Programmatically overwrite data row variables
-if 'Attendance_status' in df.columns:
-    df['Attendance_status'] = 'Present'
-    print("✅ Stabilized Attendance_status data rows.")
+for i, (student_id, school_id) in enumerate(STUDENT_DATA_RECORDS):
+    # Randomly assign a status based on our weights
+    assigned_status = random.choices(status_options, weights=status_weights, k=1)
+    
+    # Generate excuse codes dynamically based on the attendance status outcome
+    if assigned_status == "Absent":
+        assigned_excuse = random.choice(["Illness", "Family_Emergency", "Unexcused"])
+    elif assigned_status == "Tardy":
+        assigned_excuse = random.choice(["Late_Bus", "Traffic", "Unexcused"])
+    else:
+        assigned_excuse = "N/A"
+        
+    # Build a clean row matching Clever's exact CSV column specifications
+    compiled_rows.append({
+        "Attendance_id": f"ATT-{today_str}-{i+1:04d}",
+        "Attendance_date": today_str,
+        "Attendance_status": assigned_status,
+        "Excuse_code": assigned_excuse,
+        "Student_id": str(student_id),
+        "Section_id": "",     # Left blank per specifications note for standard profiles
+        "School_id": str(school_id),
+        "Attendance_type": "daily"
+    })
 
-if 'Excuse_code' in df.columns:
-    df['Excuse_code'] = 'N/A'
-    print("✅ Defaulted Excuse_code parameters.")
+# Convert compile list cleanly to a DataFrame frame
+df = pd.DataFrame(compiled_rows)
 
-if 'Attendance_id' in df.columns:
-    df['Attendance_id'] = [f"ATT-{today_str}-{i+1:04d}" for i in range(len(df))]
-    print("✅ Assigned unique, chronological tracking IDs.")
-
-# FIXED: Kept the name static so it cleanly overwrites the file on their end daily
+# Enforce static delivery name layout so it overwrites downstream target correctly
 daily_filename = "attendance.csv"
-
-# Save the freshly manipulated dataframe locally inside the runner instance container
 df.to_csv(daily_filename, index=False)
-print(f"Generated staging export file: {daily_filename}")
+print(f"Successfully generated dynamic sync payload file containing {len(df)} rows.")
 
 # === 3. AUTOMATED SFTP TRANSFER (S3 GATEWAY COMPATIBLE) ===
 print(f"Opening secure transport handshake to {SFTP_HOST}...")
@@ -58,16 +87,16 @@ try:
     transport.connect(username=SFTP_USER, password=SFTP_PASS)
     sftp = paramiko.SFTPClient.from_transport(transport)
     
-    # Safely handle the path resolution without utilizing sftp.chdir()
+    # Safely handle path resolution without utilizing sftp.chdir()
     if REMOTE_DIRECTORY and REMOTE_DIRECTORY != "/":
         remote_folder = REMOTE_DIRECTORY.strip("/")
         remote_target_path = f"/{remote_folder}/{daily_filename}"
     else:
         remote_target_path = f"/{daily_filename}"
         
-    print(f"Direct streaming target file write destination pathway set to: {remote_target_path}")
+    print(f"Streaming target write file directly to pathway destination: {remote_target_path}")
     
-    # Directly streaming the payload to bypass AWS Transfer Family ListBucket validation blocks
+    # Direct streaming put execution
     sftp.put(daily_filename, remote_target_path)
     print("🚀 Cloud Export Completed Successfully!")
     
