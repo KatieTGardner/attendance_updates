@@ -32,8 +32,8 @@ except Exception as e:
 
 print(f"Processing {len(df)} total rows. Overwriting attendance fields...")
 
-# Define standard distribution options for Clever (e.g., 85% present, 8% tardy, 7% absent)
-status_options = ["present", "tardy", "absent"]
+# Clean Capitalized Options matching Clever's exact required Enum structures
+status_options = ["Present", "Tardy", "Absent"]
 status_weights = [0.85, 0.08, 0.07]
 
 # Loop through every row in the file to selectively modify only attendance parameters
@@ -41,14 +41,14 @@ for idx in range(len(df)):
     # 1. Update the date column to today's date
     df.at[idx, 'Attendance_date'] = today_str
     
-    # 2. Randomly select an alternating status
+    # 2. Extract status as a clean string asset (fixed from array layout brackets)
     assigned_status = random.choices(status_options, weights=status_weights, k=1)
     df.at[idx, 'Attendance_status'] = assigned_status
     
-    # 3. Assign a realistic excuse code depending on the randomized status
-    if assigned_status == "absent":
+    # 3. Dynamic excuse code generator matching the selected status
+    if assigned_status == "Absent":
         df.at[idx, 'Excuse_code'] = random.choice(["Illness", "Family_Emergency", "Unexcused"])
-    elif assigned_status == "tardy":
+    elif assigned_status == "Tardy":
         df.at[idx, 'Excuse_code'] = random.choice(["Late_Bus", "Traffic", "Unexcused"])
     else:
         df.at[idx, 'Excuse_code'] = "N/A"
@@ -56,7 +56,7 @@ for idx in range(len(df)):
     # 4. Generate a clean unique tracking code for this day's run
     df.at[idx, 'Attendance_id'] = f"sisid{today_str}-{idx+1:04d}"
 
-# Keep Attendance_type forced to standard daily value if it exists
+# Ensure Attendance_type matches daily tracking structure
 if 'Attendance_type' in df.columns:
     df['Attendance_type'] = "daily"
 
