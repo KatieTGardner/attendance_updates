@@ -6,98 +6,77 @@ import pandas as pd
 import paramiko
 
 # === 1. CONFIGURATION ===
-# Paste your list of active student/school records here
-# Format: (Student_id, School_id)
-STUDENT_DATA_RECORDS = [
-    ("574095232", "13K123"),
-    ("958709227", "13K123"),
-    ("243615677", "13K123"),
-    ("381370052", "13K123"),
-    ("992399521", "13K123"),
-    ("159541752", "13K123"),
-    ("142858690", "27Q321"),
-    ("526702789", "27Q321"),
-    ("406243122", "27Q321"),
-    ("281062504", "27Q321"),
-    ("189563051", "27Q321"),
-    ("260768059", "27Q321"),
-    ("153274070", "02M800")
-    # 💡 Pro-tip: You can paste additional rows following this exact format above!
-]
+MASTER_FILE = "attendance.csv"
 
 # Fetch secure environmental credentials from GitHub Secrets
 SFTP_HOST = os.environ.get("SFTP_HOST")
 SFTP_PORT = 22
 SFTP_USER = os.environ.get("SFTP_USER")
 SFTP_PASS = os.environ.get("SFTP_PASS")
-REMOTE_DIRECTORY = os.environ.get("REMOTE_DIRECTORY", "/")
 
 # Defensive safeguard: Halt early if secrets are unconfigured
 if not all([SFTP_HOST, SFTP_USER, SFTP_PASS]):
     print("CRITICAL ERROR: One or more secure SFTP Secrets are missing from repository settings!")
     sys.exit(1)
 
-# === 2. DYNAMIC ATTENDANCE GENERATION ===
+# === 2. SMART IN-PLACE OVERWRITE PROCESSING ===
 today_str = datetime.datetime.now().strftime("%Y-%m-%d")
-print(f"Generating live data rows for date: {today_str}")
+print(f"Loading master file template: {MASTER_FILE}")
 
-# Setup status options and weighting (e.g., 80% Present, 10% Tardy, 10% Absent)
-status_options = ["Present", "Tardy", "Absent"]
-status_weights = [0.80, 0.10, 0.10]
+try:
+    # Read the full file directly out of your repository
+    df = pd.read_csv(MASTER_FILE)
+except Exception as e:
+    print(f"CRITICAL ERROR: Could not read template file: {e}")
+    sys.exit(1)
 
-# List to hold processed row structures
-compiled_rows = []
+print(f"Processing {len(df)} total rows. Overwriting attendance fields...")
 
-for i, (student_id, school_id) in enumerate(STUDENT_DATA_RECORDS):
-    # Randomly assign a status based on our weights
-    assigned_status = random.choices(status_options, weights=status_weights, k=1)
+# Define standard distribution options for Clever (e.g., 85% present, 8% tardy, 7% absent)
+status_options = ["present", "tardy", "absent"]
+status_weights = [0.85, 0.08, 0.07]
+
+# Loop through every row in the file to selectively modify only attendance parameters
+for idx in range(len(df)):
+    # 1. Update the date column to today's date
+    df.at[idx, 'Attendance_date'] = today_str
     
-    # Generate excuse codes dynamically based on the attendance status outcome
-    if assigned_status == "Absent":
-        assigned_excuse = random.choice(["Illness", "Family_Emergency", "Unexcused"])
-    elif assigned_status == "Tardy":
-        assigned_excuse = random.choice(["Late_Bus", "Traffic", "Unexcused"])
+    # 2. Randomly select an alternating status
+    assigned_status = random.choices(status_options, weights=status_weights, k=1)
+    df.at[idx, 'Attendance_status'] = assigned_status
+    
+    # 3. Assign a realistic excuse code depending on the randomized status
+    if assigned_status == "absent":
+        df.at[idx, 'Excuse_code'] = random.choice(["Illness", "Family_Emergency", "Unexcused"])
+    elif assigned_status == "tardy":
+        df.at[idx, 'Excuse_code'] = random.choice(["Late_Bus", "Traffic", "Unexcused"])
     else:
-        assigned_excuse = "N/A"
+        df.at[idx, 'Excuse_code'] = "N/A"
         
-    # Build a clean row matching Clever's exact CSV column specifications
-    compiled_rows.append({
-        "Attendance_id": f"ATT-{today_str}-{i+1:04d}",
-        "Attendance_date": today_str,
-        "Attendance_status": assigned_status,
-        "Excuse_code": assigned_excuse,
-        "Student_id": str(student_id),
-        "Section_id": "",     # Left blank per specifications note for standard profiles
-        "School_id": str(school_id),
-        "Attendance_type": "daily"
-    })
+    # 4. Generate a clean unique tracking code for this day's run
+    df.at[idx, 'Attendance_id'] = f"sisid{today_str}-{idx+1:04d}"
 
-# Convert compile list cleanly to a DataFrame frame
-df = pd.DataFrame(compiled_rows)
+# Keep Attendance_type forced to standard daily value if it exists
+if 'Attendance_type' in df.columns:
+    df['Attendance_type'] = "daily"
 
-# Enforce static delivery name layout so it overwrites downstream target correctly
-daily_filename = "attendance.csv"
-df.to_csv(daily_filename, index=False)
-print(f"Successfully generated dynamic sync payload file containing {len(df)} rows.")
+# Save the freshly updated values back to the staging path
+df.to_csv(MASTER_FILE, index=False)
+print(f"✅ Finished updating fields. Prepared {len(df)} rows for export.")
 
-# === 3. AUTOMATED SFTP TRANSFER (S3 GATEWAY COMPATIBLE) ===
+# === 3. AUTOMATED SFTP TRANSFER (EXPLICIT SUBFOLDER ROUTING) ===
 print(f"Opening secure transport handshake to {SFTP_HOST}...")
 transport = paramiko.Transport((SFTP_HOST, SFTP_PORT))
 try:
     transport.connect(username=SFTP_USER, password=SFTP_PASS)
     sftp = paramiko.SFTPClient.from_transport(transport)
     
-    # Safely handle path resolution without utilizing sftp.chdir()
-    if REMOTE_DIRECTORY and REMOTE_DIRECTORY != "/":
-        remote_folder = REMOTE_DIRECTORY.strip("/")
-        remote_target_path = f"/{remote_folder}/{daily_filename}"
-    else:
-        remote_target_path = f"/{daily_filename}"
-        
-    print(f"Streaming target write file directly to pathway destination: {remote_target_path}")
+    # FORCED TARGET PATHWAY: Overwrites the target subfolder file explicitly
+    remote_target_path = "/home/decorous-school-4198/attendance.csv"
+    print(f"Streaming target write file directly to destination path: {remote_target_path}")
     
-    # Direct streaming put execution
-    sftp.put(daily_filename, remote_target_path)
+    # Send the processed file over to your partner's environment
+    sftp.put(MASTER_FILE, remote_target_path)
     print("🚀 Cloud Export Completed Successfully!")
     
     sftp.close()
