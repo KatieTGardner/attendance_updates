@@ -25,9 +25,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pandas paramiko
 
-    - name: Run Dynamic Data Update and SFTP Export
+- name: Run Dynamic Data Update and SFTP Export
       env:
-        # Securely pass variables from repository secrets into active environment variables
+        # Corrected format: Just one single dollar sign before the braces
         SFTP_HOST: ${{ secrets.SFTP_HOST }}
         SFTP_USER: ${{ secrets.SFTP_USER }}
         SFTP_PASS: ${{ secrets.SFTP_PASS }}
