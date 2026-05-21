@@ -44,8 +44,8 @@ if 'Attendance_id' in df.columns:
     df['Attendance_id'] = [f"ATT-{today_str}-{i+1:04d}" for i in range(len(df))]
     print("✅ Assigned unique, chronological tracking IDs.")
 
-# Generate your final dynamic filename using your new base name
-daily_filename = f"attendance_{today_str}.csv"
+# FIXED: Kept the name static so it cleanly overwrites the file on their end daily
+daily_filename = "attendance.csv"
 
 # Save the freshly manipulated dataframe locally inside the runner instance container
 df.to_csv(daily_filename, index=False)
