@@ -15,16 +15,18 @@ SFTP_USER = os.environ.get("SFTP_USER")
 SFTP_PASS = os.environ.get("SFTP_PASS")
 SFTP_REMOTE_DIR = os.environ.get("SFTP_REMOTE_DIR", ".")
 
+# === VALIDATE ENVIRONMENT VARIABLES ===
 if not all([SFTP_HOST, SFTP_USER, SFTP_PASS]):
     print("CRITICAL ERROR: One or more secure SFTP secrets are missing.")
     sys.exit(1)
 
-# === DATE FORMAT REQUIRED BY SYNC ===
+# === DATE FORMATTING ===
 attendance_date = datetime.datetime.now().strftime("%Y-%m-%dT00:00:00Z")
 date_for_id = datetime.datetime.now().strftime("%Y%m%d")
 
 print(f"Loading master file: {MASTER_FILE}")
 
+# === LOAD CSV ===
 try:
     df = pd.read_csv(MASTER_FILE, dtype=str).fillna("")
 except Exception as e:
@@ -33,38 +35,50 @@ except Exception as e:
 
 print(f"Processing {len(df)} rows")
 
-# === NORMALIZE HEADERS ===
+# === CLEAN COLUMN HEADERS ===
 df.columns = [col.strip() for col in df.columns]
 
+# === FLEXIBLE COLUMN MAPPING ===
 column_aliases = {
-    "Attendance": "Attendance_",
-    "attendance": "Attendance_",
-    "attendance_status": "Attendance_",
-    "Attendance_status": "Attendance_",
+    "Attendance": "Attendance_status",
+    "Attendance_": "Attendance_status",
+    "attendance": "Attendance_status",
+    "attendance_status": "Attendance_status",
 }
 
-df = df.rename(columns={old: new for old, new in column_aliases.items() if old in df.columns})
+df = df.rename(
+    columns={
+        old: new
+        for old, new in column_aliases.items()
+        if old in df.columns
+    }
+)
 
+# === REQUIRED COLUMNS ===
 required_columns = [
     "Student_id",
     "School_id",
     "Section_id",
     "Attendance_date",
     "Attendance_type",
-    "Attendance_",
+    "Attendance_status",
     "Excuse_code",
     "Attendance_id",
 ]
 
 missing = [col for col in required_columns if col not in df.columns]
+
 if missing:
     print(f"CRITICAL ERROR: Missing required columns: {missing}")
     print(f"Found columns: {list(df.columns)}")
     sys.exit(1)
 
 # === NORMALIZE VALUES ===
+
+# Standardize date format
 df["Attendance_date"] = attendance_date
 
+# Attendance type
 df["Attendance_type"] = (
     df["Attendance_type"]
     .replace("", "daily")
@@ -72,14 +86,15 @@ df["Attendance_type"] = (
     .str.strip()
 )
 
-df["Attendance_"] = (
-    df["Attendance_"]
+# Attendance status
+df["Attendance_status"] = (
+    df["Attendance_status"]
     .replace("", "present")
     .str.lower()
     .str.strip()
 )
 
-# Normalize common values just in case
+# Normalize known statuses
 attendance_value_map = {
     "Present": "present",
     "Absent": "absent",
@@ -89,11 +104,14 @@ attendance_value_map = {
     "tardy": "tardy",
 }
 
-df["Attendance_"] = df["Attendance_"].replace(attendance_value_map)
+df["Attendance_status"] = df["Attendance_status"].replace(attendance_value_map)
 
-# Only keep excuse codes for non-present records
-df.loc[df["Attendance_"] == "present", "Excuse_code"] = ""
+# === EXCUSE CODE HANDLING ===
 
+# Clear excuse codes for present students
+df.loc[df["Attendance_status"] == "present", "Excuse_code"] = ""
+
+# Clean formatting
 df["Excuse_code"] = (
     df["Excuse_code"]
     .astype(str)
@@ -101,7 +119,7 @@ df["Excuse_code"] = (
     .str.replace(" ", "_", regex=False)
 )
 
-# === SAFER ATTENDANCE IDS ===
+# === GENERATE SAFE ATTENDANCE IDS ===
 df["Attendance_id"] = [
     f"sisid{date_for_id}{str(i + 1).zfill(5)}"
     for i in range(len(df))
@@ -111,8 +129,10 @@ df["Attendance_id"] = [
 for col in required_columns:
     df[col] = df[col].astype(str).str.strip()
 
+# Keep exact column order
 df = df[required_columns]
 
+# === EXPORT CSV ===
 df.to_csv(
     OUTPUT_FILE,
     index=False,
@@ -122,14 +142,18 @@ df.to_csv(
 
 print(f"Saved processed file: {OUTPUT_FILE}")
 
-# === UPLOAD TO SFTP ===
+# === SFTP UPLOAD ===
 try:
     transport = paramiko.Transport((SFTP_HOST, SFTP_PORT))
-    transport.connect(username=SFTP_USER, password=SFTP_PASS)
+    transport.connect(
+        username=SFTP_USER,
+        password=SFTP_PASS
+    )
 
     sftp = paramiko.SFTPClient.from_transport(transport)
 
     remote_path = f"{SFTP_REMOTE_DIR.rstrip('/')}/{REMOTE_FILE}"
+
     print(f"Uploading to SFTP: {remote_path}")
 
     sftp.put(OUTPUT_FILE, remote_path)
