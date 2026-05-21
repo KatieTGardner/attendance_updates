@@ -58,11 +58,20 @@ try:
     transport.connect(username=SFTP_USER, password=SFTP_PASS)
     sftp = paramiko.SFTPClient.from_transport(transport)
     
-    sftp.chdir(REMOTE_DIRECTORY)
-    print(f"Transferring {daily_filename} to remote directory node...")
-    sftp.put(daily_filename, daily_filename)
+    # Check if a specific sub-directory string path variation has been configured
+    if REMOTE_DIRECTORY and REMOTE_DIRECTORY != "/":
+        # Ensure the remote folder format handles slashes correctly
+        remote_folder = REMOTE_DIRECTORY.strip("/")
+        remote_target_path = f"/{remote_folder}/{daily_filename}"
+    else:
+        remote_target_path = f"/{daily_filename}"
+        
+    print(f"Uploading file directly to destination target path: {remote_target_path}")
     
+    # Directly write the file without scanning directory trees first
+    sftp.put(daily_filename, remote_target_path)
     print("🚀 Cloud Export Completed Successfully!")
+    
     sftp.close()
 finally:
     transport.close()
