@@ -41,11 +41,11 @@ for idx in range(len(df)):
     # 1. Update the date column to today's date
     df.at[idx, 'Attendance_date'] = today_str
     
-    # 2. Extract status as a clean string asset (fixed from array layout brackets)
+    # 2. Extract status as a clean string asset (Fixed with trailing)
     assigned_status = random.choices(status_options, weights=status_weights, k=1)
     df.at[idx, 'Attendance_status'] = assigned_status
     
-    # 3. Dynamic excuse code generator matching the selected status
+    # 3. Dynamic excuse code generator matching the selected status string
     if assigned_status == "Absent":
         df.at[idx, 'Excuse_code'] = random.choice(["Illness", "Family_Emergency", "Unexcused"])
     elif assigned_status == "Tardy":
