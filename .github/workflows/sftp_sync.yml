@@ -1,0 +1,35 @@
+name: Scheduled Daily SFTP Export Sync
+
+on:
+  schedule:
+    # Runs automatically at exactly 2:00 AM UTC every single day (9:00 PM PT)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    # Provides you a manual override play button in the UI to trigger a run instantly for testing
+
+jobs:
+  build-and-export:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository Code Assets
+      uses: actions/checkout@v4
+
+    - name: Initialize Cloud Python Runner Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Secure Engine Requirements
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas paramiko
+
+    - name: Run Dynamic Data Update and SFTP Export
+      env:
+        # Securely pass variables from repository secrets into active environment variables
+        SFTP_HOST: ${{ secrets.SFTP_HOST }}
+        SFTP_USER: ${{ secrets.SFTP_USER }}
+        SFTP_PASS: ${{ secrets.SFTP_PASS }}
+        REMOTE_DIRECTORY: ${{ secrets.REMOTE_DIRECTORY }}
+      run: python daily_sftp_sync.py
