@@ -1,76 +1,68 @@
 import os
 import datetime
+import sys
 import pandas as pd
 import paramiko
 
 # === 1. CONFIGURATION ===
-# File Locations
-LOCAL_DIRECTORY = r"C:\Users\YourName\Documents"  # Use your folder path here
-MASTER_FILE = os.path.join(LOCAL_DIRECTORY, "export_data.csv")
+MASTER_FILE = "attendance.csv"  # Updated to match your exact filename
 
-# SFTP Server Details
-SFTP_HOST = "sftp.yourdomain.com"
+# Fetch secure environmental credentials from GitHub Secrets
+SFTP_HOST = os.environ.get("SFTP_HOST")
 SFTP_PORT = 22
-SFTP_USER = "your_sftp_username"
-SFTP_PASS = "your_sftp_password"
-REMOTE_DIRECTORY = "/remote_directory/"
+SFTP_USER = os.environ.get("SFTP_USER")
+SFTP_PASS = os.environ.get("SFTP_PASS")
+REMOTE_DIRECTORY = os.environ.get("REMOTE_DIRECTORY", "/")
+
+# Defensive safeguard: Halt early if secrets are unconfigured
+if not all([SFTP_HOST, SFTP_USER, SFTP_PASS]):
+    print("CRITICAL ERROR: One or more secure SFTP Secrets are missing from repository settings!")
+    sys.exit(1)
 
 # === 2. DYNAMIC DATA PROCESSING ===
-# Calculate today's date in various formats
-today_str = datetime.datetime.now().strftime("%Y-%m-%d")  # e.g., 2026-05-21
+today_str = datetime.datetime.now().strftime("%Y-%m-%d")
 
-print(f"Opening master data template: {MASTER_FILE}")
-# Read the master file into a data processing frame
+print(f"Parsing data sheet template: {MASTER_FILE}")
 df = pd.read_csv(MASTER_FILE)
 
-# A. Update the primary date column to today's date
-# (Replace 'Attendance_Date' with the exact header name used in your file)
-if 'Attendance_Date' in df.columns:
-    df['Attendance_Date'] = today_str
-    print("✅ Successfully updated all rows to today's date.")
+# Dynamically stamp today's execution date onto your tracking columns
+for col in df.columns:
+    if col.lower() in ['date', 'attendance_date', 'timestamp']:
+        df[col] = today_str
+        print(f"✅ Auto-updated date field values in column: {col}")
 
-# B. OPTIONAL HIGHER-LEVEL UPDATES
-# Update optional columns safely if they exist in your template file layout
+# Programmatically overwrite data row variables
 if 'Attendance_status' in df.columns:
-    df['Attendance_status'] = 'Present'  # Or whatever default value you need to enforce
-    print("✅ Reset Attendance_status fields.")
+    df['Attendance_status'] = 'Present'
+    print("✅ Stabilized Attendance_status data rows.")
 
 if 'Excuse_code' in df.columns:
-    df['Excuse_code'] = 'N/A'  # Clear or default the excuse code
-    print("✅ Cleaned Excuse_code fields.")
+    df['Excuse_code'] = 'N/A'
+    print("✅ Defaulted Excuse_code parameters.")
 
 if 'Attendance_id' in df.columns:
-    # Example: Generates a unique sequential ID string combined with today's date
     df['Attendance_id'] = [f"ATT-{today_str}-{i+1:04d}" for i in range(len(df))]
-    print("✅ Created new unique dynamic Attendance_id values.")
+    print("✅ Assigned unique, chronological tracking IDs.")
 
-# Generate the unique daily timestamped file name
-daily_filename = f"export_data_{today_str}.csv"
-output_path = os.path.join(LOCAL_DIRECTORY, daily_filename)
+# Generate your final dynamic filename using your new base name
+daily_filename = f"attendance_{today_str}.csv"
 
-# Save the updated data as a fresh, clean CSV file
-df.to_csv(output_path, index=False)
-print(f"Saved freshly updated file locally at: {output_path}")
+# Save the freshly manipulated dataframe locally inside the runner instance container
+df.to_csv(daily_filename, index=False)
+print(f"Generated staging export file: {daily_filename}")
 
 # === 3. AUTOMATED SFTP TRANSFER ===
-print(f"Initiating secure handshake to {SFTP_HOST}...")
+print(f"Opening secure transport handshake to {SFTP_HOST}...")
 transport = paramiko.Transport((SFTP_HOST, SFTP_PORT))
 try:
     transport.connect(username=SFTP_USER, password=SFTP_PASS)
     sftp = paramiko.SFTPClient.from_transport(transport)
     
-    # Change to the remote target directory folder layout
     sftp.chdir(REMOTE_DIRECTORY)
+    print(f"Transferring {daily_filename} to remote directory node...")
+    sftp.put(daily_filename, daily_filename)
     
-    remote_target_path = remote_directory + daily_filename
-    print(f"Uploading {daily_filename} to server...")
-    sftp.put(output_path, daily_filename)
-    print("🚀 SFTP Export Completed Successfully!")
-    
+    print("🚀 Cloud Export Completed Successfully!")
     sftp.close()
 finally:
     transport.close()
-
-# 4. CLEAN UP (Optional)
-# Uncomment the line below if you want to delete the daily file copy locally after upload
-# os.remove(output_path)
