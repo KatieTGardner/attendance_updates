@@ -2,10 +2,17 @@ name: Scheduled Daily SFTP Export Sync
 
 on:
   schedule:
-    # Runs automatically at exactly 2:00 AM UTC every single day (9:00 PM PT)
+    # 1. RUNS DAILY: Automatically at exactly 2:00 AM UTC every single day (9:00 PM PT)
     - cron: '0 2 * * *'
+  
+  push:
+    # 2. RUNS ON CODE UPDATES: Automatically triggers whenever changes are saved to main
+    branches:
+      - main
+      - master
+
   workflow_dispatch:
-    # Provides you a manual override play button in the UI to trigger a run instantly for testing
+    # 3. MANUAL OVERRIDE: Keeps your manual play button active in the UI for ad-hoc tests
 
 jobs:
   build-and-export:
@@ -27,7 +34,6 @@ jobs:
 
     - name: Run Dynamic Data Update and SFTP Export
       env:
-        # Fixed: Removed the extraneous character before the brackets
         SFTP_HOST: ${{ secrets.SFTP_HOST }}
         SFTP_USER: ${{ secrets.SFTP_USER }}
         SFTP_PASS: ${{ secrets.SFTP_PASS }}
