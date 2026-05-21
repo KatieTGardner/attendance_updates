@@ -36,6 +36,15 @@ print(f"Processing {len(df)} rows")
 # === NORMALIZE HEADERS ===
 df.columns = [col.strip() for col in df.columns]
 
+column_aliases = {
+    "Attendance": "Attendance_",
+    "attendance": "Attendance_",
+    "attendance_status": "Attendance_",
+    "Attendance_status": "Attendance_",
+}
+
+df = df.rename(columns={old: new for old, new in column_aliases.items() if old in df.columns})
+
 required_columns = [
     "Student_id",
     "School_id",
@@ -50,12 +59,18 @@ required_columns = [
 missing = [col for col in required_columns if col not in df.columns]
 if missing:
     print(f"CRITICAL ERROR: Missing required columns: {missing}")
+    print(f"Found columns: {list(df.columns)}")
     sys.exit(1)
 
 # === NORMALIZE VALUES ===
 df["Attendance_date"] = attendance_date
 
-df["Attendance_type"] = df["Attendance_type"].replace("", "daily").str.lower().str.strip()
+df["Attendance_type"] = (
+    df["Attendance_type"]
+    .replace("", "daily")
+    .str.lower()
+    .str.strip()
+)
 
 df["Attendance_"] = (
     df["Attendance_"]
@@ -64,13 +79,24 @@ df["Attendance_"] = (
     .str.strip()
 )
 
-# Only keep excuse_code for non-present records.
-# If your SIS requires specific codes, replace these with real allowed values.
+# Normalize common values just in case
+attendance_value_map = {
+    "Present": "present",
+    "Absent": "absent",
+    "Tardy": "tardy",
+    "present": "present",
+    "absent": "absent",
+    "tardy": "tardy",
+}
+
+df["Attendance_"] = df["Attendance_"].replace(attendance_value_map)
+
+# Only keep excuse codes for non-present records
 df.loc[df["Attendance_"] == "present", "Excuse_code"] = ""
 
-# Remove unsafe characters from existing excuse codes
 df["Excuse_code"] = (
     df["Excuse_code"]
+    .astype(str)
     .str.strip()
     .str.replace(" ", "_", regex=False)
 )
@@ -87,8 +113,12 @@ for col in required_columns:
 
 df = df[required_columns]
 
-# Important: write as plain CSV, not Excel-formatted
-df.to_csv(OUTPUT_FILE, index=False, encoding="utf-8", lineterminator="\n")
+df.to_csv(
+    OUTPUT_FILE,
+    index=False,
+    encoding="utf-8",
+    lineterminator="\n"
+)
 
 print(f"Saved processed file: {OUTPUT_FILE}")
 
