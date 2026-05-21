@@ -5,7 +5,7 @@ import pandas as pd
 import paramiko
 
 # === 1. CONFIGURATION ===
-MASTER_FILE = "attendance.csv"  # Updated to match your exact filename
+MASTER_FILE = "attendance.csv"
 
 # Fetch secure environmental credentials from GitHub Secrets
 SFTP_HOST = os.environ.get("SFTP_HOST")
@@ -51,24 +51,23 @@ daily_filename = f"attendance_{today_str}.csv"
 df.to_csv(daily_filename, index=False)
 print(f"Generated staging export file: {daily_filename}")
 
-# === 3. AUTOMATED SFTP TRANSFER ===
+# === 3. AUTOMATED SFTP TRANSFER (S3 GATEWAY COMPATIBLE) ===
 print(f"Opening secure transport handshake to {SFTP_HOST}...")
 transport = paramiko.Transport((SFTP_HOST, SFTP_PORT))
 try:
     transport.connect(username=SFTP_USER, password=SFTP_PASS)
     sftp = paramiko.SFTPClient.from_transport(transport)
     
-    # Check if a specific sub-directory string path variation has been configured
+    # Safely handle the path resolution without utilizing sftp.chdir()
     if REMOTE_DIRECTORY and REMOTE_DIRECTORY != "/":
-        # Ensure the remote folder format handles slashes correctly
         remote_folder = REMOTE_DIRECTORY.strip("/")
         remote_target_path = f"/{remote_folder}/{daily_filename}"
     else:
         remote_target_path = f"/{daily_filename}"
         
-    print(f"Uploading file directly to destination target path: {remote_target_path}")
+    print(f"Direct streaming target file write destination pathway set to: {remote_target_path}")
     
-    # Directly write the file without scanning directory trees first
+    # Directly streaming the payload to bypass AWS Transfer Family ListBucket validation blocks
     sftp.put(daily_filename, remote_target_path)
     print("🚀 Cloud Export Completed Successfully!")
     
