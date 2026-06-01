@@ -1,32 +1,25 @@
 name: Upload Daily Attendance
-
 on:
   workflow_dispatch:
-
   schedule:
     - cron: "0 8 * * *"
-
 jobs:
   upload-attendance:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install dependencies
         run: |
           pip install pandas paramiko
-
       - name: Run attendance upload
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST }}
           SFTP_USER: ${{ secrets.SFTP_USER }}
           SFTP_PASS: ${{ secrets.SFTP_PASS }}
           SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
-        run: python upload_attendance.py
+        run: python daily_sftp_sync.py
