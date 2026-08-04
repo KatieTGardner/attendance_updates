@@ -1,0 +1,15 @@
+School_id,Student_id,Student_number,State_id,Last_name,Middle_name,First_name,Gender,Dob,Grade,Race,Hispanic_Latino,Ell_status,Frl_status,Iep_status,Student_zip,Student_email,Contact_name,Contact_type,Contact_relationship,Contact_phone,Contact_email,Username,Password
+13K123,574095232,574095232,657821010,Considine,M,David,male,6/18/06,1,M,Y,N,F,N,11355,c_david@example.org,Salman Herzog,Uncle,Uncle,688-145-6088,salman_herzog@example.com,davidc32,aekai0ohr4Lei
+13K123,958709227,958709227,331462769,Kovacek,J,Donald,male,3/11/06,1,B,N,N,F,N,11427,k.donald@example.com,Brandon Kovacek,Brother,Brother,(747)251-3781,kovacek.brandon@example.org,donaldk27,lai6Sahkoo9
+13K123,243615677,243615677,438969260,Anderson,L,John,male,10/25/06,1,W,N,Y,N,N,10473,john.a@example.com,Amanda Anderson,Mother,Mother,1-368-497-1208,anderson_amanda@example.org,johna77,Chei3ohnae
+13K123,381370052,381370052,762316342,Sawayn,S,Angelo,male,11/5/06,1,B,N,Y,F,Y,11235,s.angelo@example.net,Kacie Sawayn,Cousin,Cousin,(862)639-1797 x15950,sawayn.kacie@example.org,angelos52,Ohch1ohz
+13K123,992399521,992399521,486242945,Robel,A,Steven,male,8/19/06,1,W,N,N,F,Y,11413,steven.r@example.com,Andrew Klein,Stepfather,Stepfather,1-706-045-4158 x653,klein_andrew@example.org,stevenr21,Cae6Zoogh
+13K123,159541752,159541752,770286362,Grady,K,Timothy,male,11/2/06,1,B,N,Y,N,N,10031,timothy.g@example.net,Sajida McClure,Great Aunt,Great Aunt,727.333.2851,mcclure.sajida@example.net,timothyg52,Iquaeg5ie
+27Q321,142858690,142858690,397018257,Keeling,J,Kathy,female,4/21/99,8,W,N,N,N,N,10474,kathy_k@example.net,Sabrine Keeling,Mother,Mother,1-488-086-6446 x8060,sabrine.keeling@example.com,kathyk90,eeD2Zei8yoL
+27Q321,526702789,526702789,583476072,Jacobs,C,Barbara,female,7/2/99,8,B,N,N,N,N,11221,j_barbara@example.org,Drew Bauch,Grandfather,Grandfather,1-853-502-8868 x5785,bauch.drew@example.net,barbaraj89,xu6je8oTah
+27Q321,406243122,406243122,127394708,Fahey,A,Young,female,4/26/99,8,W,N,N,F,N,10463,f.young@example.net,Kayla Fahey,Great Aunt,Great Aunt,1-456-643-4247,kayla.fahey@example.com,youngf22,athohB7Aif
+27Q321,281062504,281062504,112158775,Kreiger,J,Ruby,female,1/2/99,8,B,Y,Y,N,Y,11697,ruby.k@example.com,Arsal Mohr,Brother,Brother,574.491.8588,mohr.arsal@example.org,rubyk04,Wahde1ahph
+27Q321,189563051,189563051,652845522,Jewess,G,Amanda,female,10/18/99,8,W,N,Y,N,Y,11435,amanda_j@example.org,Shefa Jewess,Family Friend,Family Friend,426-679-2699,shefa_jewess@example.net,amandaj51,roh1Feiphah
+27Q321,260768059,260768059,638158320,Collins,J,Dianna,female,3/17/99,8,B,N,N,F,N,10033,c.dianna@example.org,Aaron Collins,Father,Father,1-330-280-1898,aaron_collins@example.org,diannac59,Leeyah8ouph9
+27Q321,414223239,414223239,543505942,Stark,D,Kristen,female,1/21/99,8,W,Y,N,R,Y,11218,s_kristen@example.net,Justin Goodwin,Family Friend,Family Friend,707.325.6493 x891,goodwin.justin@example.com,kristens39,uqu3Weilah
+02M800,153274070,153274070,791610984,Brakus,I,Manuel,male,10/23/95,12,W,N,Y,N,N,11211,manuel.b@example.com,Danny Brakus,Family Friend,Family Friend,810.493.2811 x5572,brakus.danny@example.com,manuelb70,aj5eeSai7B

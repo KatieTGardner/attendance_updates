@@ -1,0 +1,46 @@
+School_id,Section_id,Teacher_id,Name,Grade,Course_name,Course_number,Period,Term_name,Term_start,Term_end
+13K123,711,1,"Class 101, Homeroom - 101 - H. Hahn (Section 1)",1,"Class 101, Homeroom",101,0,Y1,8/1/19,6/1/20
+13K123,718,2,"Class 102, Homeroom - 102 - E. Harris (Section 2)",1,"Class 102, Homeroom",102,0,Y1,8/1/19,6/1/20
+13K123,722,3,"Class 103, Homeroom - 103 - R. Prosacco",1,"Class 103, Homeroom",103,0,Y1,8/1/19,6/1/20
+13K123,755,1,"Grade 1 Math, Class 101 - 101 - H. Hahn",1,"Grade 1 Math, Class 101",101,2,Y1,8/1/19,6/1/20
+13K123,761,2,"Grade 1 Math, Class 102 - 102 - E. Harris",1,"Grade 1 Math, Class 102",102,1,Y1,8/1/19,6/1/20
+13K123,767,3,"Grade 1 Math, Class 103 - 103 - R. Prosacco",1,"Grade 1 Math, Class 103",103,3,Y1,8/1/19,6/1/20
+13K123,808,1,"Grade 1 Music, Class 101 - 101 - H. Hahn",1,"Grade 1 Music, Class 101",101,5,Y1,8/1/19,6/1/20
+13K123,810,2,"Grade 1 Music, Class 102 - 102 - E. Harris",1,"Grade 1 Music, Class 102",102,5,Y1,8/1/19,6/1/20
+13K123,812,3,"Grade 1 Music, Class 103 - 103 - R. Prosacco",1,"Grade 1 Music, Class 103",103,4,Y1,8/1/19,6/1/20
+13K123,846,1,"Grade 1 Reading, Class 101 - 101 - H. Hahn",1,"Grade 1 Reading, Class 101",101,1,Y1,8/1/19,6/1/20
+13K123,847,2,"Grade 1 Reading, Class 102 - 102 - E. Harris",1,"Grade 1 Reading, Class 102",102,1,Y1,8/1/19,6/1/20
+13K123,848,3,"Grade 1 Reading, Class 103 - 103 - R. Prosacco",1,"Grade 1 Reading, Class 103",103,2,Y1,8/1/19,6/1/20
+13K123,872,1,"Grade 1 Science, Class 101 - 101 - H. Hahn",1,"Grade 1 Science, Class 101",101,2,Y1,8/1/19,6/1/20
+13K123,878,2,"Grade 1 Science, Class 102 - 102 - E. Harris",1,"Grade 1 Science, Class 102",102,3,Y1,8/1/19,6/1/20
+13K123,885,3,"Grade 1 Science, Class 103 - 103 - R. Prosacco",1,"Grade 1 Science, Class 103",103,4,Y1,8/1/19,6/1/20
+13K123,915,1,"Grade 1 Social Studies, Class 101 - 101 - H. Hahn",1,"Grade 1 Social Studies, Class 101",101,3,Y1,8/1/19,6/1/20
+13K123,917,2,"Grade 1 Social Studies, Class 102",1,"Grade 1 Social Studies, Class 102",102,3,Y1,8/1/19,6/1/20
+13K123,919,3,"Grade 1 Social Studies, Class 103",1,"Grade 1 Social Studies, Class 103",103,2,Y1,8/1/19,6/1/20
+27Q321,593,83,Eighth Grade Advisory - 801 - S. Madison,8,Eighth Grade Advisory,801,4,Y1,8/1/19,6/1/20
+27Q321,594,84,Eighth Grade Advisory - 802 - R. Monroe,8,Eighth Grade Advisory,802,4,Y1,8/1/19,6/1/20
+27Q321,595,85,Eighth Grade Advisory - 803 - K. Hudson,8,Eighth Grade Advisory,803,4,Y1,8/1/19,6/1/20
+27Q321,664,30,"English, Class 801 - 801 - J. Schneider",8,"English, Class 801",801,8,Y1,8/1/19,6/1/20
+27Q321,665,30,"English, Class 802 - 802 - J. Schneider",8,"English, Class 802",802,8,Y1,8/1/19,6/1/20
+27Q321,666,30,"English, Class 803 - 803 - J. Schneider",8,"English, Class 803",803,8,Y1,8/1/19,6/1/20
+27Q321,675,44,"Fine Arts, Class 801 - 801 - A. Ortiz (Section 1)",8,"Fine Arts, Class 801",801,1,Y1,8/1/19,6/1/20
+27Q321,676,44,"Fine Arts, Class 802 - 802 - A. Ortiz (Section 2)",8,"Fine Arts, Class 802",802,1,Y1,8/1/19,6/1/20
+27Q321,677,44,"Fine Arts, Class 803 - 803 - A. Ortiz (Section 3)",8,"Fine Arts, Class 803",803,1,Y1,8/1/19,6/1/20
+27Q321,741,30,"Class 801, Homeroom - 801 - J. Schneider",8,"Class 801, Homeroom",801,0,Y1,8/1/19,6/1/20
+27Q321,742,33,"Class 802, Homeroom - 802 - R. Conn (Section 2)",8,"Class 802, Homeroom",802,0,Y1,8/1/19,6/1/20
+27Q321,743,36,"Class 803, Homeroom - 803 - C. Daniel (Section 3)",8,"Class 803, Homeroom",803,0,Y1,8/1/19,6/1/20
+27Q321,786,33,"Mathematics, Class 801 - 801 - R. Conn (Section 1)",8,"Mathematics, Class 801",801,7,Y1,8/1/19,6/1/20
+27Q321,787,33,"Mathematics, Class 802 - 802 - R. Conn (Section 2)",8,"Mathematics, Class 802",802,7,Y1,8/1/19,6/1/20
+27Q321,788,33,"Mathematics, Class 803 - 803 - R. Conn (Section 3)",8,"Mathematics, Class 803",803,7,Y1,8/1/19,6/1/20
+27Q321,838,65,"Physical Education, Class 801 - 801 - K. Ritchie",8,"Physical Education, Class 801",801,4,Y1,8/1/19,6/1/20
+27Q321,839,65,"Physical Education, Class 802 - 802 - K. Ritchie",8,"Physical Education, Class 802",802,4,Y1,8/1/19,6/1/20
+27Q321,840,65,"Physical Education, Class 803 - 803 - K. Ritchie",8,"Physical Education, Class 803",803,4,Y1,8/1/19,6/1/20
+27Q321,904,41,"Science, Class 801 - 801 - C. Gleichner",8,"Science, Class 801",801,3,Y1,8/1/19,6/1/20
+27Q321,905,41,"Science, Class 802 - 802 - C. Gleichner",8,"Science, Class 802",802,3,Y1,8/1/19,6/1/20
+27Q321,906,41,"Science, Class 803 - 803 - C. Gleichner",8,"Science, Class 803",803,3,Y1,8/1/19,6/1/20
+27Q321,938,36,"Social Studies, Class 801 - 801 - C. Daniel",8,"Social Studies, Class 801",801,5,Y1,8/1/19,6/1/20
+27Q321,939,36,"Social Studies, Class 802 - 802 - C. Daniel",8,"Social Studies, Class 802",802,5,Y1,8/1/19,6/1/20
+27Q321,940,36,"Social Studies, Class 803 - 803 - C. Daniel",8,"Social Studies, Class 803",803,5,Y1,8/1/19,6/1/20
+27Q321,945,42,"Spanish, Class 801 - 801 - J. Doyle (Section 1)",8,"Spanish, Class 801",801,2,Y1,8/1/19,6/1/20
+27Q321,946,42,"Spanish, Class 802 - 802 - J. Doyle (Section 2)",8,"Spanish, Class 802",802,2,Y1,8/1/19,6/1/20
+27Q321,947,42,"Spanish, Class 803 - 803 - J. Doyle (Section 3)",8,"Spanish, Class 803",803,2,Y1,8/1/19,6/1/20

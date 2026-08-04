@@ -1,0 +1,8 @@
+School_id,Staff_id,Staff_email,First_name,Last_name,Title,Username,Password,Department
+02M800,67352,sally_May@gmail.com,Sally,May,Principal,sally_May@gmail.com,Changeme,
+13K123,56472,johnbison@hotmail.com,John,Bison,Math Specialist,johnbison@hotmail.com,Changeme,Math
+27Q321,99876,harrypotter@hogwarts.com,Harry,Potter,District Science Coach,harrypotter@hogwarts.com,Changeme,
+02M800,24356,sheilalegion@gmail.com,Sheila,Legion,Principal,sheilalegion@gmail.com,Changeme,
+13K123,12342,coffeeaddict@aol.com,Lucy,Freemont,Principal,coffeeaddict@aol.com,Changeme,
+27Q321,98763,bennyhanna@gmail.com,Benjamin,Hanna,Literacy Specialist,bennyhanna@gmail.com,Changeme,English
+13K123,67352,sally_May@gmail.com,Sally,May,Assistant Principal,sally_May@gmail.com,Changeme,
