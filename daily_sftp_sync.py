@@ -15,20 +15,17 @@ SFTP_PORT = 22
 SFTP_USER = os.environ.get("SFTP_USER")
 SFTP_PASS = os.environ.get("SFTP_PASS")
 
-# NOTE: this MUST be set (e.g. via repo/env secret) to "home/decorous-school-4198"
-# for every workflow job that runs this script. If it's unset/blank it silently
-# falls back to "." and files land in the SFTP root instead of the district
-# subdirectory -- this is what caused the stray root-level attendance.csv.
+# NOTE on this account's SFTP setup: logging in as the district user (e.g.
+# "decorous-school-4198") already drops you into that district's home
+# directory on Clever's shared SFTP server -- you do NOT need to additionally
+# cd into "home/<district>" after connecting. SFTP_REMOTE_DIR should normally
+# just be "." (upload directly into the login's default directory). Setting
+# it to "home/<district>" on top of that login will create a duplicate
+# nested subdirectory.
 SFTP_REMOTE_DIR = os.environ.get("SFTP_REMOTE_DIR", ".")
 
 if not all([SFTP_HOST, SFTP_USER, SFTP_PASS]):
     print("CRITICAL ERROR: One or more secure SFTP secrets are missing.")
-    sys.exit(1)
-
-if SFTP_REMOTE_DIR.strip() in ("", "."):
-    print("CRITICAL ERROR: SFTP_REMOTE_DIR is not set to the district subdirectory "
-          "(expected something like 'home/decorous-school-4198'). Aborting to avoid "
-          "uploading to the SFTP root.")
     sys.exit(1)
 
 # === Additional static files to keep in sync alongside attendance ===
@@ -155,8 +152,14 @@ try:
     transport.connect(username=SFTP_USER, password=SFTP_PASS)
     sftp = paramiko.SFTPClient.from_transport(transport)
 
+    login_cwd = sftp.normalize(".")
+    print(f"Logged in as '{SFTP_USER}', default directory is: {login_cwd}")
+
     remote_dir = SFTP_REMOTE_DIR.rstrip("/")
-    ensure_remote_dir(sftp, remote_dir)
+    if remote_dir not in ("", "."):
+        ensure_remote_dir(sftp, remote_dir)
+    else:
+        remote_dir = "."
 
     # Build the full list of (local_path, remote_filename) pairs to sync:
     # the freshly generated attendance file plus the static reference files.
