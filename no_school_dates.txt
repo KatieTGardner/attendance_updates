@@ -1,0 +1,24 @@
+# Non-school days for attendance generation.
+#
+# Place this file next to your CSVs (LOCAL_DATA_DIR). Weekends are skipped
+# automatically and do not need to be listed here.
+#
+# Format: one entry per line.
+#   2026-11-26              a single date
+#   2026-12-21..2027-01-02  an inclusive range
+#   # ...                   comment, ignored
+#
+# Dates below are placeholders — replace them with your district's actual
+# calendar.
+
+# Fall
+2026-11-25..2026-11-27   # Thanksgiving break
+
+# Winter
+2026-12-21..2027-01-01   # Winter break
+
+# Spring
+2027-01-18               # MLK Day
+2027-02-15               # Presidents Day
+2027-03-29..2027-04-02   # Spring break
+2027-05-31               # Memorial Day
